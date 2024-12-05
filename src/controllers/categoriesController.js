@@ -27,10 +27,10 @@ const getCategoryById = async (req, res) => {
 
 // Function to get products for a category (including child categories)
 const getProductsInCategory = async (req, res) => {
-const categoryId = parseInt(req.params.id, 10); // Parse the ID to an integer
-if (isNaN(categoryId)) {
-    return res.status(400).json({ error: 'Invalid category ID' });
-}
+    const categoryId = parseInt(req.params.id, 10); // Parse the ID to an integer
+    if (isNaN(categoryId)) {
+        return res.status(400).json({ error: 'Invalid category ID' });
+    }
   const query = `
     SELECT p."ID", p."Name", p."Description", p."Price", p."INDls", p."Stock" 
     FROM "Products" AS p
@@ -38,18 +38,17 @@ if (isNaN(categoryId)) {
     WHERE pc."ID-Category" = $1;
   `;
 
-  const products = await pool.query(query, [categoryId]);
 
+  const products = await pool.query(query, [categoryId]);
   // Get all child categories for the given category
   const childCategories = await getChildCategories(categoryId);
-
-  // Add products from child categories
+  // Add products from child 
   for (let childCategory of childCategories) {
-    const childProducts = await pool.query(query, [childCategory.id]);
+    const childProducts = await pool.query(query, [childCategory.ID]);
     products.rows = [...products.rows, ...childProducts.rows];
-  }
 
-  return products.rows;
+  }
+  res.json(products.rows)
 }
 
 // Function to get all child categories recursively
