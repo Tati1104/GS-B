@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');  // Import cors
 const app = express();
 const { getCategoryById, getProductsInCategory } = require('./controllers/categoryController');
+const { getProductsByID } = require('./controllers/productsController');
+const {registerUser,loginUser} = require ('./controllers/authController')
 const port = 3000;
 
 // Middleware
@@ -35,12 +37,24 @@ app.get('/category/id/products', async (req, res) => {
   try {
     const categoryId = req.params.id;
     const products = await getProductsInCategory(categoryId);
-    console.log(products)
     res.json({ products});
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
 });
+
+app.get('/product/id', async (req, res) => {
+  try {
+    const productsID = req.params.id;
+    const products = await getProductsByID(productsID);
+    res.json(products);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+app.post('/api/register', registerUser); 
+app.post('/api/login', loginUser)
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

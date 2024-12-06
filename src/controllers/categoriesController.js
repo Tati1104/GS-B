@@ -37,8 +37,6 @@ const getProductsInCategory = async (req, res) => {
     JOIN "Products-Categories" AS pc ON p."ID" = pc."ID-Product"
     WHERE pc."ID-Category" = $1;
   `;
-
-
   const products = await pool.query(query, [categoryId]);
   // Get all child categories for the given category
   const childCategories = await getChildCategories(categoryId);
