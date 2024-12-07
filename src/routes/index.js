@@ -3,6 +3,7 @@ const router = express.Router();
 const { getProductsInCategory, getCategoryById } = require('../controllers/categoriesController');
 const { getProductsByID } = require ('../controllers/productsController');
 const { registerUser,loginUser } = require('../controllers/authController'); 
+const { addToCart, getCart, checkout, eliminateItem } = require('../controllers/cartController');
 
 
 
@@ -12,4 +13,10 @@ router.get('/category/:id/products', getProductsInCategory); // Get products by 
 router.get('/product/:id', getProductsByID);
 router.post('/api/register', registerUser); // User registration route
 router.post('/api/login', loginUser);       // User login route
+router.post('/cart/add', addToCart);
+router.get('/cart', getCart);
+router.get('/cart/checkout', checkout);
+router.patch('/cart/remove/:productId',eliminateItem) , 
+
+
 module.exports = router;
