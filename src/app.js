@@ -60,7 +60,7 @@ app.post('/api/login', loginUser);
 app.post('/cart/add', addToCart);
 app.get('/cart', getCart);
 app.post('/cart/checkout', checkout);
-app.patch('/cart/remove/:productId',eliminateItem) , 
+app.patch('/cart/remove',eliminateItem) , 
 
 
 

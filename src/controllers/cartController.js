@@ -3,7 +3,6 @@ const pool = require('../config/database');
 // Agregar al carrito
 const addToCart = async (req, res) => {
     const { productId, quantity, userId } = req.query;
-  
     try {
         // Check if the user has an active cart (unfinished)
         const cartResult = await pool.query(
@@ -31,22 +30,16 @@ const addToCart = async (req, res) => {
     
         // Get product details to get the price
         const productResult = await pool.query(
-          'SELECT "Price" FROM "Products" WHERE "ID" = $1 LIMIT 1',
+          'SELECT "Price", "Name" FROM "Products" WHERE "ID" = $1 LIMIT 1',
           [productId]
         );
-
-        // Get product details to get the price
-        const name = await pool.query(
-            'SELECT "Name" FROM "Products" WHERE "ID" = $1 LIMIT 1',
-        [productId]
-        );
-              
     
         if (productResult.rows.length === 0) {
           return res.status(404).json({ message: 'Producto no encontrado' });
         }
     
-        const price = productResult.rows[0].price;
+        const price = productResult.rows[0].Price;
+        const name = productResult.rows[0].Name
     
         let cartItem;
         if (cartItemResult.rows.length > 0) {
@@ -146,7 +139,6 @@ const checkout = async (req, res) => {
   const eliminateItem = async (req, res) => {
     const { productId, quantity, userId } = req.query;
 
-  
     try {
       // Query to find the most recent unfinished cart for the user
       const cartResult = await pool.query(
@@ -184,8 +176,8 @@ const checkout = async (req, res) => {
         const newTotal = cartItem.price * newQuantity;
   
         await pool.query(
-          'UPDATE "cart_items" SET "quantity" = $1, "total" = $2 WHERE "id" = $3',
-          [newQuantity, newTotal, cartItem.id]
+          'UPDATE "cart_items" SET "quantity" = $1 WHERE "id" = $2',
+          [newQuantity, cartItem.id]
         );
       }
   

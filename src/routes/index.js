@@ -16,7 +16,7 @@ router.post('/api/login', loginUser);       // User login route
 router.post('/cart/add', addToCart);
 router.get('/cart', getCart);
 router.get('/cart/checkout', checkout);
-router.patch('/cart/remove/:productId',eliminateItem) , 
+router.patch('/cart/remove',eliminateItem) , 
 
 
 module.exports = router;
