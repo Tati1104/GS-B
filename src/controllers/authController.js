@@ -51,4 +51,21 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+const updateUser = async (req,res) => {
+    const { id, new_email, new_username } = req.query;
+    if (!id || !new_email || !new_username){
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+    try {
+        const result = await pool.query(
+            'UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *',
+            [new_username, new_email, id] 
+        );
+        res.status(201).json({ user: result.rows[0] });
+    } catch (error) {
+        console.error('Error during update:', error.message || error);
+        res.status(500).json({ error: 'Internal server error during update' });
+    }
+}
+
+module.exports = { registerUser, loginUser, updateUser };

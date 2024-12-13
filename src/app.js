@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');  // Import cors
 const app = express();
 const { getCategoryById, getProductsInCategory } = require('./controllers/categoryController');
-const { getProductsByID } = require('./controllers/productsController');
-const {registerUser,loginUser} = require ('./controllers/authController');
+const { getProductsByID, getProductsByName } = require('./controllers/productsController');
+const {registerUser,loginUser, updateUser} = require ('./controllers/authController');
 const { addToCart, getCart, checkout, eliminateItem } = require('./controllers/cartController');
 const port = 3000;
 
@@ -54,9 +54,19 @@ app.get('/product/id', async (req, res) => {
   }
 });
 
+app.get('/api/products/search', async (req, res) => {
+  try {
+    const query = req.query.query;
+    const products = await getProductsByName(query);
+    res.json(products);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
 app.post('/api/register', registerUser); 
 app.post('/api/login', loginUser);
-
+app.post('/api/update', updateUser);
 app.post('/cart/add', addToCart);
 app.get('/cart', getCart);
 app.post('/cart/checkout', checkout);

@@ -20,7 +20,22 @@ const getProductsByID = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+const getProductsByName = async (req, res) => {
+    try {
+      const query = req.query.query.toLowerCase();
+      const result = await pool.query(
+        'SELECT * FROM "Products" WHERE LOWER("Name") LIKE $1',
+        [`%${query}%`]
+      );
+      res.json(result.rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+}
+
 module.exports = {
-    getProductsByID
+    getProductsByID, getProductsByName
   };
   
