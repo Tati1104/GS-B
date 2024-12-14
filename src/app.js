@@ -5,6 +5,7 @@ const { getCategoryById, getProductsInCategory } = require('./controllers/catego
 const { getProductsByID, getProductsByName } = require('./controllers/productsController');
 const {registerUser,loginUser, updateUser} = require ('./controllers/authController');
 const { addToCart, getCart, checkout, eliminateItem } = require('./controllers/cartController');
+const {getProductsByIDAdmin, getProducts, getCategories, addProduct, modifyProduct, removeProduct} = require('./controllers/adminController')
 const port = 3000;
 
 // Middleware
@@ -54,6 +55,34 @@ app.get('/product/id', async (req, res) => {
   }
 });
 
+app.get('admin/product/id', async (req, res) => {
+  try {
+    const productsID = req.params.id;
+    const products = await getProductsByIDAdmin(productsID);
+    res.json(products);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+app.get('admin/products', async (req, res) => {
+  try {
+    const products = await getProducts();
+    res.json(products);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+app.get('admin/categories', async (req, res) => {
+  try {
+    const categories = await getCategories();
+    res.json(categories);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
 app.get('/api/products/search', async (req, res) => {
   try {
     const query = req.query.query;
@@ -67,6 +96,9 @@ app.get('/api/products/search', async (req, res) => {
 app.post('/api/register', registerUser); 
 app.post('/api/login', loginUser);
 app.post('/api/update', updateUser);
+app.post('/admin/product/add', addProduct);
+app.post('/admin/product/modify', modifyProduct);
+app.delete('/admin/product/remove', removeProduct);
 app.post('/cart/add', addToCart);
 app.get('/cart', getCart);
 app.post('/cart/checkout', checkout);

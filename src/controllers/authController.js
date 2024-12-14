@@ -6,7 +6,15 @@ const registerUser = async (req, res) => {
     if (!username || !email || !password) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
+
     try {
+        // Verificar si el email ya existe
+        const emailCheck = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        if (emailCheck.rows.length > 0) {
+            return res.status(409).json({ error: 'Email is already in use' }); // 409 Conflict
+        }
+
+        // Crear el usuario si el email no existe
         const hashedPassword = await bcrypt.hash(password, 10);
         const result = await pool.query(
             'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
@@ -18,6 +26,7 @@ const registerUser = async (req, res) => {
         res.status(500).json({ error: 'Internal server error during registration' });
     }
 };
+
 // Login User
 const loginUser = async (req, res) => {
     const { email, password } = req.query;
