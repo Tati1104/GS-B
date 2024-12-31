@@ -2,7 +2,9 @@ const pool = require('../config/database');
 
 // Agregar al carrito
 const addToCart = async (req, res) => {
-    const { productId, quantity, userId } = req.query;
+    const { productID, quantity, userId } = req.query;
+    const productIdn = decodeURIComponent(productID);
+
     try {
         // Check if the user has an active cart (unfinished)
         const cartResult = await pool.query(
@@ -25,13 +27,13 @@ const addToCart = async (req, res) => {
         // Check if the product already exists in the cart
         const cartItemResult = await pool.query(
           'SELECT * FROM "cart_items" WHERE "cart_id" = $1 AND "product_id" = $2 LIMIT 1',
-          [cart.id, productId]
+          [cart.id, productIdn]
         );
     
         // Get product details to get the price
         const productResult = await pool.query(
           'SELECT "Price", "Name" FROM "Products" WHERE "ID" = $1 LIMIT 1',
-          [productId]
+          [productIdn]
         );
     
         if (productResult.rows.length === 0) {
@@ -55,7 +57,7 @@ const addToCart = async (req, res) => {
           // If the product doesn't exist in the cart, add a new item
           await pool.query(
             'INSERT INTO "cart_items" ("cart_id", "product_id", "quantity", "price", "name") VALUES ($1, $2, $3, $4, $5)',
-            [cart.id, productId, quantity, price, name]
+            [cart.id, productIdn, quantity, price, name]
           );
         }
     
@@ -137,7 +139,9 @@ const checkout = async (req, res) => {
 
   // Reducir o eliminar una cantidad específica de un producto del carrito
   const eliminateItem = async (req, res) => {
-    const { productId, quantity, userId } = req.query;
+    const { productID, quantity, userId } = req.query;
+    const productId = decodeURIComponent(productID);
+
 
     try {
       // Query to find the most recent unfinished cart for the user
